@@ -12,21 +12,22 @@
 
     body {
       margin: 0;
-      padding: 16px;
-      height: 100dvh; /* Вся доступная высота экрана с учетом панели браузера */
+      padding: 16px 16px 64px 16px; /* Добавили большой отступ снизу под плашку Netlify */
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start; /* Выравниваем элементы сверху вниз */
+      gap: 16px; /* Фиксированный отступ между зеркалом и кнопками */
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #F4F5F7; /* Светлый фон с мягкой подсветкой */
+      background: #F4F5F7;
       color: #111;
     }
 
     .camera-wrapper {
       width: 100%;
       max-width: 420px;
-      height: 75dvh; /* Занимает 75% экрана, оставляя место для кнопок снизу */
+      height: 65dvh; /* Уменьшили высоту, чтобы кнопки поднялись выше */
       border-radius: 20px;
       overflow: hidden;
       background: #E2E4E8;
@@ -46,7 +47,6 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      padding-bottom: 8px;
     }
 
     button {
@@ -109,8 +109,6 @@
 
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
-        
-        // Принудительный запуск видео с первого нажатия
         await video.play();
       } catch (err) {
         console.error('Ошибка:', err.name, err.message);
