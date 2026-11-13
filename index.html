@@ -12,13 +12,13 @@
 
     body {
       margin: 0;
-      padding: 16px 16px 64px 16px; /* Добавили большой отступ снизу под плашку Netlify */
+      padding: 16px 16px 64px 16px;
       height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start; /* Выравниваем элементы сверху вниз */
-      gap: 16px; /* Фиксированный отступ между зеркалом и кнопками */
+      justify-content: flex-start;
+      gap: 16px;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       background: #F4F5F7;
       color: #111;
@@ -27,7 +27,7 @@
     .camera-wrapper {
       width: 100%;
       max-width: 420px;
-      height: 75dvh; /* Уменьшили высоту, чтобы кнопки поднялись выше */
+      height: 75vh;
       border-radius: 20px;
       overflow: hidden;
       background: #E2E4E8;
@@ -52,7 +52,7 @@
     button {
       flex: 1;
       padding: 14px 12px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       border-radius: 12px;
       border: none;
@@ -98,11 +98,10 @@
       try {
         stopCamera();
 
+        // Убрали жесткие width/height, чтобы камера брала полный угол обзора сенсора
         const constraints = {
           video: {
-            facingMode: currentFacingMode,
-            width: { ideal: 720 },
-            height: { ideal: 1280 }
+            facingMode: currentFacingMode
           },
           audio: false
         };
@@ -110,6 +109,17 @@
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
         await video.play();
+
+        // Принудительно ставим минимальный зум, если телефон поддерживает управление зумом
+        const [track] = currentStream.getVideoTracks();
+        if (track && track.getCapabilities) {
+          const capabilities = track.getCapabilities();
+          if (capabilities.zoom) {
+            await track.applyConstraints({
+              advanced: [{ zoom: capabilities.zoom.min }]
+            });
+          }
+        }
       } catch (err) {
         console.error('Ошибка:', err.name, err.message);
         alert(`Не удалось запустить камеру: ${err.name}`);
